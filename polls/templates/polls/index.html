@@ -1,0 +1,40 @@
+{% extends 'polls/base.html' %}
+
+{% block content %}
+<nav>
+    <li><a href="{% url 'profile' %}">Профиль</a></li>
+    <li><a href="{% url 'create_post' %}">Добавить пост</a></li>
+    <li><a href="{% url 'logout' %}">Выйти</a></li>
+</nav>
+<ul>
+    {% for post in page_obj %}
+    <li>
+        <h2><a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a></h2>
+        <p>Описание: {{ post.content|truncatechars:50 }}</p>
+        <p>Количество лайков: {{ post.likes.count }}</p>
+        {% if not forloop.last %}
+        <hr>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+
+<!-- Пагинация -->
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; Первая</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+        {% endif %}
+
+        <span class="current">
+            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Следующая</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Последняя &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}

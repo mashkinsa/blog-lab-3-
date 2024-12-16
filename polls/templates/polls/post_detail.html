@@ -1,0 +1,44 @@
+{% extends 'polls/base.html' %}
+{% block title %}
+{{post.title}}
+{% endblock %}
+{% block content %}
+<nav>
+    <li><a href="{% url 'index' %}">Главная</a></li>
+    <li><a href="{% url 'profile' %}">Профиль</a></li>
+</nav>
+<h1>Заголовок: {{ post.title }}</h1>
+<p>Описание: {{ post.content }}</p>
+<p>Создан: {{ post.time_update }}</p>
+{% if post.author == request.user %}
+<a href="{% url 'edit_post' post.slug %}">Редактировать пост</a>
+<form method="post" action="{% url 'delete_post' post.slug %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit">Удалить пост</button>
+</form>
+{% else%}
+<form method="post" action="{% url 'like_post' post.slug %}" style="display:inline;">
+    {% csrf_token %}
+    {% if request.user in post.likes.all %}
+    <button type="submit">Убрать лайк</button>
+    {% else %}
+    <button type="submit">Лайкнуть</button>
+    {% endif %}
+</form>
+{% endif %}
+<h2>Комментарии:</h2>
+<p><a href="{% url 'add_comment' post.slug %}">Добавить комментарий</a></p>
+{% for comment in post.comments.all %}
+<p><strong>{{ comment.author }}</strong>: {{ comment.content }}</p>
+<p><small>Создано: {{ comment.created_at }}</small></p>
+{% if comment.author == request.user %}
+<a href="{% url 'edit_comment' comment.id %}">Редактировать</a>
+<form method="post" action="{% url 'delete_comment' comment.id %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit">Удалить</button>
+</form>
+{% endif %}
+{% endfor %}
+{% endblock %}
+
+
